@@ -45,7 +45,7 @@ exports.login =  function (req, res, next) {
                res.send(err);
            }
            const token = jwt.sign(user, 'bao_dang');
-           return res.json({user, token});
+           return res.status(200).json({user, token});
         });
     })(req, res);
 }
@@ -59,7 +59,7 @@ exports.profile = function(req, res, next) {
         else if(info){
             return res.status(400).json({message: info.message});
         }
-        return res.json({user});
+        return res.status(200).json({user});
     })(req, res, next);
 }
   
