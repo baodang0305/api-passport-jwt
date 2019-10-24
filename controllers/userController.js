@@ -13,7 +13,7 @@ exports.register = async(req, res) => {
     // }
     const username = req.body.username;
     const password = req.body.password;
-    if(await checkUser(username)){
+    if(await checkUser(username, password)){
         return res.send('user is already');
     }
     const hashPassword = await bcrypt.hash(password, 10);
