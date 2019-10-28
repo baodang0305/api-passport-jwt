@@ -1,4 +1,4 @@
-const {userModel, checkUser} = require('../models/userModel');
+const {userModel, checkUsername} = require('../models/userModel');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 exports.register = async(req, res) => {
     const {username, password, fullName} = req.body;
     console.log(password);
-    if(await checkUser(username, password)){
+    if(await checkUsername(username)){
         return res.send('user is already');
     }
     const hashPassword = await bcrypt.hash(password, 10);

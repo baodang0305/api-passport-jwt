@@ -10,6 +10,14 @@ const userSchema = Schema({
 
 const userModel = mongoose.model('userModel', userSchema);
 
+const checkUsername = async(username)=>{
+    const userFinder = await userModel.findOne({'username': username});
+    if(!userFinder){
+        return false;
+    }
+    return true;
+}
+
 const checkUser = async(username, password) =>{
   
     const userFinder = await userModel.findOne({'username': username});
@@ -28,6 +36,7 @@ const checkUser = async(username, password) =>{
 
 module.exports = {
     userModel,
+    checkUsername,
     checkUser
 }
 
