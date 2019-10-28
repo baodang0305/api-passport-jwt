@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -34,9 +35,10 @@ run().catch(error => console(error));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

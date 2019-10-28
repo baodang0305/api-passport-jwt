@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const userSchema = Schema({
     username: String,
     password: String
-}, {collection: 'User'});
+}, {collection: 'user'});
 
 const userModel = mongoose.model('userModel', userSchema);
 

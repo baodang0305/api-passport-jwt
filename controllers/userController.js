@@ -1,19 +1,11 @@
 const {userModel, checkUser} = require('../models/userModel');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
-
 const jwt = require('jsonwebtoken');
 
 exports.register = async(req, res) => {
-    // req.checkBody('username', 'username is required').notEmpty();
-    // req.checkBody('password', 'minimum password length is 5').isLength({min: 5});
-    // const errors = validationErrors(req);
-    // if(errors){
-    //     console.log(errors);
-    // }
-    const username = req.body.username;
-    const password = req.body.password;
-    const fullName = req.body.fullName;
+    const {username, password, fullName} = req.body;
+    console.log(password);
     if(await checkUser(username, password)){
         return res.send('user is already');
     }
