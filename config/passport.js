@@ -15,7 +15,7 @@ passport.use(new LocalStrategy({
                  if (!result) {
                      return cb(null, false, {message: 'Incorrect email or password.'});
                  }
-                 return cb(null, username, {message: 'Logged In Successfully'});
+                 return cb(null, username, {message: 'Login is successed'});
             })
             .catch(err => cb(err));
       }
