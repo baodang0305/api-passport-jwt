@@ -26,9 +26,10 @@ passport.use(new JWTStrategy({
     secretOrKey: 'bao_dang'
     },
     function(jwtPayload, cb){
-        console.log(jwtPayload.username)
-        return userModel.findOne(jwtPayload.username)
+        console.log(jwtPayload)
+        return userModel.findOne({'username': jwtPayload})
             .then(user => {
+                console.log(user);
                 return cb(null, user);
             })
             .catch(err => {

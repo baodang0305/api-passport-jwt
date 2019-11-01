@@ -53,7 +53,7 @@ exports.profile = function(req, res, next) {
         else if(info){
             return res.status(400).json({message: info.message});
         }
-        return res.status(200).json({user});
+        return res.status(200).json(user);
     })(req, res, next);
 }
   
