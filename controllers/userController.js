@@ -23,15 +23,14 @@ exports.register = async(req, res) => {
             console.log("insert is success");
         }
     });
-    res.json({user});
+    res.json(user);
 }
 
 exports.login =  function (req, res, next) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: 'Something is not right',
-                user   : user
+                message: 'Something is not right'
             });
         }
        req.login(user, {session: false}, (err) => {
@@ -55,5 +54,26 @@ exports.profile = function(req, res, next) {
         }
         return res.status(200).json(user);
     })(req, res, next);
+}
+
+exports.update = async(req, res) => {
+    const {username, newUsername, newFullName} = req.body;
+    if(await checkUsername(username)){
+        const user = {
+            'username': newUsername,
+            'fullName': newFullName
+        }
+        userModel.updateOne({"username": username}, {$set: {"username": newUsername, "fullName": newFullName}}, function(err, res){
+            if(err){
+                return res.status(400).json({
+                    message: 'update is fail'
+                });
+            }
+            else{
+                console.log("update is success");
+            }
+        });
+        res.status(200).json(user);
+    }
 }
   
