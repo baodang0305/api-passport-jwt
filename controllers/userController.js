@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken');
 exports.register = async(req, res) => {
     const {username, password, fullName} = req.body;
     if(await checkUsername(username)){
-        // console.log('user is already');
-        return res.status(400).json({message : 'user is already'});
+        return res.status(400).json({message : 'user đã tồn tại!'});
     }
     const hashPassword = await bcrypt.hash(password, 10);
     const user = {
@@ -20,7 +19,7 @@ exports.register = async(req, res) => {
             return console.log(err);
         }
         else{
-            console.log("insert is success");
+            console.log("insert thành công!");
         }
     });
     res.json(user);
@@ -30,7 +29,7 @@ exports.login =  function (req, res, next) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: 'Something is not right'
+                message: 'username hoặc password không đúng!'
             });
         }
        req.login(user, {session: false}, (err) => {
@@ -66,11 +65,11 @@ exports.update = async(req, res) => {
         userModel.updateOne({"username": username}, {$set: {"username": newUsername, "fullName": newFullName}}, function(err, res){
             if(err){
                 return res.status(400).json({
-                    message: 'update is fail'
+                    message: 'Cập nhật thất bại!'
                 });
             }
             else{
-                console.log("update is success");
+                console.log("Cập nhật thành công!");
             }
         });
         res.status(200).json(user);

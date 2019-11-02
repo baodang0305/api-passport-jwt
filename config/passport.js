@@ -13,9 +13,9 @@ passport.use(new LocalStrategy({
       return checkUser(username, password)
              .then(result => {
                  if (!result) {
-                     return cb(null, false, {message: 'Incorrect email or password.'});
+                     return cb(null, false, {message: 'username hoặc password không đúng!'});
                  }
-                 return cb(null, username, {message: 'Login is successed'});
+                 return cb(null, username, {message: 'Đăng nhập thành công!'});
             })
             .catch(err => cb(err));
       }
