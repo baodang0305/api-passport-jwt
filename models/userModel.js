@@ -5,13 +5,22 @@ const bcrypt = require('bcrypt');
 const userSchema = Schema({
     username: String,
     password: String,
-    fullName: String
+    fullName: String,
+    email: String
 }, {collection: 'user'});
 
 const userModel = mongoose.model('userModel', userSchema);
 
 const checkUsername = async(username)=>{
     const userFinder = await userModel.findOne({'username': username});
+    if(!userFinder){
+        return false;
+    }
+    return true;
+}
+
+const checkUserByEmail = async(email)=>{
+    const userFinder = await userModel.findOne({'email': email});
     if(!userFinder){
         return false;
     }
@@ -37,6 +46,7 @@ const checkUser = async(username, password) =>{
 module.exports = {
     userModel,
     checkUsername,
+    checkUserByEmail,
     checkUser
 }
 

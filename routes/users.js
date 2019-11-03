@@ -9,7 +9,12 @@ router.get('/', function(req, res, next) {
 
 router.post('/register', userController.register);
 
-router.post('/login', userController.login);
+router.post('/login-local', userController.login_local);
+
+router.get('/login-facebook', userController.login_facebook);
+
+router.get('/auth/facebook/callback', userController.authe_facebook_callback);
+  
 
 router.post('/update', userController.update);
 

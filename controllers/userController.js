@@ -25,21 +25,46 @@ exports.register = async(req, res) => {
     res.json(user);
 }
 
-exports.login =  function (req, res, next) {
-    passport.authenticate('local', {session: false}, (err, user, info) => {
-        if (err || !user) {
+exports.login_local =  function (req, res, next) {
+    passport.authenticate('local', {session: false}, (err, username) => {
+        if (err || !username) {
             return res.status(400).json({
                 message: 'username hoặc password không đúng!'
             });
         }
-       req.login(user, {session: false}, (err) => {
+        req.login(username, {session: false}, (err) => {
            if (err) {
                res.send(err);
            }
-           const token = jwt.sign(user, 'bao_dang');
-           return res.status(200).json({user, token});
+           const token = jwt.sign(username, 'bao_dang');
+           return res.status(200).json({username, token});
         });
     })(req, res);
+}
+
+exports.login_facebook =  function (req, res, next) {
+    passport.authenticate('facebook', {session: false, scope: 'email'}, (err, user) => {
+        if(err || !user) {
+            console.log( user);
+            return res.status(400).json({
+                message: 'email hoặc password không đúng!'
+            });
+        }
+        req.login(user, {session: false}, (err) => {
+            if(err){
+                res.send(err);
+            }
+            const token = jwt.sign(user, 'bao_dang');
+            console.log( user);
+            return res.status(200).json({user, token});
+        })
+    })(req,res);
+}
+
+exports.authe_facebook_callback = function(req, res, next){
+    passport.authenticate('facebook', {
+        failureRedirect: '/', successRedirect: '/'
+    });
 }
 
 /* GET user profile. */
