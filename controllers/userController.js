@@ -1,11 +1,11 @@
-const {userModel, checkUsername} = require('../models/userModel');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {userLCModel, checkUserByUsername} = require('../models/userLCModel');
 
 exports.register = async(req, res) => {
     const {username, password, fullName} = req.body;
-    if(await checkUsername(username)){
+    if(await checkUserByUsername(username)){
         return res.status(400).json({message : 'user đã tồn tại!'});
     }
     const hashPassword = await bcrypt.hash(password, 10);
@@ -14,7 +14,7 @@ exports.register = async(req, res) => {
         'password': hashPassword,
         'fullName': fullName
     }
-    userModel.create(user, function(err, res){
+    userLCModel.create(user, function(err, res){
         if(err){
             return console.log(err);
         }
@@ -42,30 +42,21 @@ exports.login_local =  function (req, res, next) {
     })(req, res);
 }
 
-exports.login_facebook =  function (req, res, next) {
-    passport.authenticate('facebook', {session: false, scope: 'email'}, (err, user) => {
+exports.facebookOauth = function(req, res, next){
+    passport.authenticate('facebookToken', { scope: ['profile', 'email'], session: false}, (err, user) => {
         if(err || !user) {
-            console.log( user);
             return res.status(400).json({
-                message: 'email hoặc password không đúng!'
+                message: 'Đăng nhập facebook thất bại!'
             });
         }
-        req.login(user, {session: false}, (err) => {
-            if(err){
-                res.send(err);
-            }
-            const token = jwt.sign(user, 'bao_dang');
-            console.log( user);
-            return res.status(200).json({user, token});
-        })
-    })(req,res);
+        const token = jwt.sign(user, 'bao_dang');
+        return res.status(200).json({user, token});
+    })(req, res, next);
 }
 
-exports.authe_facebook_callback = function(req, res, next){
-    passport.authenticate('facebook', {
-        failureRedirect: '/', successRedirect: '/'
-    });
-}
+// exports.authe_facebook_callback = function(req, res){
+//     passport.authenticate('facebookToken', {successRedirect: '/', failureRedirect: '/'})(req, res);
+// }
 
 /* GET user profile. */
 exports.profile = function(req, res, next) {
@@ -82,12 +73,12 @@ exports.profile = function(req, res, next) {
 
 exports.update = async(req, res) => {
     const {username, newUsername, newFullName} = req.body;
-    if(await checkUsername(username)){
+    if(await checkUserByUsername(username)){
         const user = {
             'username': newUsername,
             'fullName': newFullName
         }
-        userModel.updateOne({"username": username}, {$set: {"username": newUsername, "fullName": newFullName}}, function(err, res){
+        userLCModel.updateOne({"username": username}, {$set: {"username": newUsername, "fullName": newFullName}}, function(err, res){
             if(err){
                 return res.status(400).json({
                     message: 'Cập nhật thất bại!'

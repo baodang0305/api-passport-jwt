@@ -1,17 +1,18 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
-const FacebookStrategy = require('passport-facebook').Strategy;
+const FacebookTokenStrategy = require('passport-facebook-token');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt
-const {userModel, checkUser, checkUsername} = require('../models/userModel');
+const {checkUserByAll} = require('../models/userLCModel');
+const {userFBModel, checkUserByFacebookID} = require('../models/userFBModel')
 
 passport.use(new LocalStrategy({
     userNameField: 'username',
     passwordField: 'password'
     },
     function(username, password, cb){
-      return checkUser(username, password)
+      return checkUserByAll(username, password)
         .then(result => {
             if (!result) {
                 return cb(null, false, {message: 'username hoặc password không đúng!'});
@@ -22,33 +23,41 @@ passport.use(new LocalStrategy({
       }
 ))
 
-passport.use(new FacebookStrategy({
-    clientID: '696276870872659',
-    clientSecret: 'dfc97a6c909688e1dbe41c2c2d7fe14c',
-    callbackURL: 'https://api-passport-jwt.herokuapp.com/user/auth/facebook/callback',
-    profileFields: ['email', 'gender', 'locale', 'name', 'displayName']
+passport.use('facebookToken', new FacebookTokenStrategy({
+    clientID: '533770450771228',
+    clientSecret: '379a40c7797d3c959cb3eb8c84145b22',
+    // callbackURL: 'http://localhost:3001/user/oauth/facebook/callback',
+    passReqToCallback: true,
+    profileFields: ['id', 'displayName', 'name', 'photos', 'emails']
     },
-    function(accessToken, refreshToken, profile, done){
-        const userInfor = profile._json;
-        return checkUserByEmail(userInfor.email)
-        .then(result => {
-            if(!result){
-                const user = {
-                    'username': userInfor.name,
-                    'email': userInfor.email
-                }
-                userModel.create(user, function(err, res){
-                    if(err){
-                        return console.log(err);
-                    }
-                    else{
-                        console.log("insert thành công!");
-                    }
-                });
+    async(req, accessToken, refreshToken, profile, done) => {
+        try{
+            console.log(profile);
+            const newUser = {
+                'fullName': profile.displayName,
+                'email': profile.emails[0].value,
+                'facebook_id': profile.id
             }
-            return done(null, userInfor, {message: 'Đăng nhập thành công'});
-        })
-        .catch(err=> done(err));
+            return checkUserByFacebookID(profile.id)
+            .then(result => {
+                if(!result){
+                    userFBModel.create(newUser)
+                    .then(err=> {
+                        if(err){
+                            return console.log(err);
+                        }
+                        else{
+                            console.log("insert thành công!");
+                        }
+                    });
+                }
+                return done(null, newUser, {message: 'Đăng nhập thành công'});
+            })
+            .catch(err=> done(err));
+        }
+        catch(error){
+            done(error, false, error.message);
+        }
     }
 
 ))

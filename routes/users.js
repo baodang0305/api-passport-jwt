@@ -11,10 +11,9 @@ router.post('/register', userController.register);
 
 router.post('/login-local', userController.login_local);
 
-router.get('/login-facebook', userController.login_facebook);
+router.post('/oauth/facebook', userController.facebookOauth);
 
-router.get('/auth/facebook/callback', userController.authe_facebook_callback);
-  
+// router.post('/oauth/facebook/callback', userController.authe_facebook_callback); 
 
 router.post('/update', userController.update);
 
