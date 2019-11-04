@@ -4,7 +4,7 @@ const passportJWT = require('passport-jwt');
 const FacebookTokenStrategy = require('passport-facebook-token');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt
-const {checkUserByAll} = require('../models/userLCModel');
+const {userLCModel, checkUserByAll} = require('../models/userLCModel');
 const {userFBModel, checkUserByFacebookID} = require('../models/userFBModel')
 
 passport.use(new LocalStrategy({
@@ -26,7 +26,6 @@ passport.use(new LocalStrategy({
 passport.use('facebookToken', new FacebookTokenStrategy({
     clientID: '725705244576219',
     clientSecret: 'a03a1905c3e5a7221eeb8f69baf46e4d',
-    // callbackURL: 'http://localhost:3001/user/oauth/facebook/callback',
     passReqToCallback: true,
     profileFields: ['id', 'displayName', 'name', 'photos', 'emails']
     },
@@ -67,8 +66,7 @@ passport.use(new JWTStrategy({
     secretOrKey: 'bao_dang'
     },
     function(jwtPayload, cb){
-        console.log(jwtPayload)
-        return userModel.findOne({'username': jwtPayload})
+        return userLCModel.findOne({'username': jwtPayload})
         .then(user => {
             console.log(user);
             return cb(null, user);

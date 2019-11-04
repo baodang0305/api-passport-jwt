@@ -54,10 +54,6 @@ exports.facebookOauth = function(req, res, next){
     })(req, res, next);
 }
 
-// exports.authe_facebook_callback = function(req, res){
-//     passport.authenticate('facebookToken', {successRedirect: '/', failureRedirect: '/'})(req, res);
-// }
-
 /* GET user profile. */
 exports.profile = function(req, res, next) {
     passport.authenticate('jwt', {session: false}, (err, user, info)=>{
