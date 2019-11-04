@@ -24,8 +24,8 @@ passport.use(new LocalStrategy({
 ))
 
 passport.use('facebookToken', new FacebookTokenStrategy({
-    clientID: '533770450771228',
-    clientSecret: '379a40c7797d3c959cb3eb8c84145b22',
+    clientID: '725705244576219',
+    clientSecret: 'a03a1905c3e5a7221eeb8f69baf46e4d',
     // callbackURL: 'http://localhost:3001/user/oauth/facebook/callback',
     passReqToCallback: true,
     profileFields: ['id', 'displayName', 'name', 'photos', 'emails']
