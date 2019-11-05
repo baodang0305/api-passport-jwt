@@ -63,7 +63,8 @@ passport.use('facebookToken', new FacebookTokenStrategy({
 
 passport.use(new JWTStrategy({
     jwtFromRequest : ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'bao_dang'
+    secretOrKey: 'bao_dang',
+    exp: moment().add(14, 'days').unix()
     },
     function(jwtPayload, cb){
         return userLCModel.findOne({'username': jwtPayload})
