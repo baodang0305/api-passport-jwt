@@ -12,6 +12,37 @@ const usersRouter = require('./routes/users');
 require('./config/passport');
 
 const app = express();
+const io = require('socket.io')();
+app.io = io;
+
+let playerArray = [];
+app.io.on('connection', function(socket){
+  let checkUser = false;
+  socket.on('add-player', function(data){
+    for(let i = 0; i < playerArray.length; i++){
+      if(playerArray[i].username === data){
+        checkUser = true;
+        break;
+      }
+    }
+    if(checkUser === false){
+      playerArray.push({'socketID': socket.id, 'username': data});
+      console.log(playerArray);
+      io.sockets.emit('list-player', playerArray);
+    }
+  });
+
+  socket.on('disconnect', function(){
+    for(let i = 0; i < playerArray.length; i+=1){
+      if(playerArray[i].socketID === socket.id){
+        playerArray.pop(playerArray[i]);
+        io.sockets.emit('list-player', playerArray);
+      }
+    }
+    console.log(playerArray);
+  });
+
+});
 
 //connect to mongodb
 const connectString = 'mongodb+srv://BaoDang:baodang0305@cluster0-v4b2n.mongodb.net/my-database';
