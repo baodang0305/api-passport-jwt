@@ -17,29 +17,39 @@ app.io = io;
 
 let playerArray = [];
 app.io.on('connection', function(socket){
-  let checkUser = false;
-  socket.on('add-player', function(data){
-    for(let i = 0; i < playerArray.length; i++){
-      if(playerArray[i].username === data){
-        checkUser = true;
-        break;
-      }
-    }
-    if(checkUser === false){
+  socket.on('client-register-player', function(data){
+    if(playerArray.indexOf(data) < 0){
+      socket.username = data;
       playerArray.push({'socketID': socket.id, 'username': data});
       console.log(playerArray);
-      io.sockets.emit('list-player', playerArray);
+      io.sockets.emit('server-send-list-player', playerArray);
     }
   });
 
-  socket.on('disconnect', function(){
-    for(let i = 0; i < playerArray.length; i+=1){
-      if(playerArray[i].socketID === socket.id){
-        playerArray.pop(playerArray[i]);
-        io.sockets.emit('list-player', playerArray);
+  let partnerArray = [];
+  socket.on('client-choose-player', function(data){
+    partnerArray.push(data);
+    partnerArray.push({socketID: socket.id, username: socket.username});
+    io.to(data.socketID).emit('server-send-request', socket.username);
+  });
+
+  socket.on('client-logout', function(data){
+    playerArray.forEach(item=>{
+      if(item.username === data){
+        playerArray.splice(item, 1);
       }
-    }
+    })
+    io.sockets.emit('server-send-list-player', playerArray);
     console.log(playerArray);
+  })
+
+  socket.on('disconnect', function(){
+    playerArray.forEach(item=>{
+      if(item.socketID === socket.id){
+        playerArray.splice(item, 1);
+      }
+    })
+    socket.broadcast.emit('server-send-list-player', playerArray);
   });
 
 });
